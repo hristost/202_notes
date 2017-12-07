@@ -1,0 +1,565 @@
+%
+% This is a borrowed LaTeX template file for lecture notes for CS267,
+% Applications of Parallel Computing, UCBerkeley EECS Department.
+% Now being used for CMU's 10725 Fall 2012 Optimization course
+% taught by Geoff Gordon and Ryan Tibshirani.  When preparing 
+% LaTeX notes for this class, please use this template.
+%
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi. "pdflatex template.tex" should also work.
+%
+
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%
+% ADD PACKAGES here:
+%
+
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{siunitx}
+\usepackage{mathtools}
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CPSC 202 Notes\hfill Fall 2017} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Notes #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Author: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Notes #1: #2}{Notes #1: #2}
+
+   {\bf Note}: {\it Quick Reference on Probability Theory, CRT, Relations, Graphs, and  Counting}
+
+   \vspace*{4mm}
+}
+\newcommand{\ngrt}{%
+  \mathrel{\ooalign{$>$\cr\hidewidth$|$\hidewidth}}%
+}
+\newcommand{\nlst}{%
+  \mathrel{\ooalign{$<$\cr\hidewidth$|$\hidewidth}}%
+}
+
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+\renewcommand{\cite}[1]{[#1]}
+\def\beginrefs{\begin{list}%
+        {[\arabic{equation}]}{\usecounter{equation}
+         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{1.6truecm}}}
+\def\endrefs{\end{list}}
+\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+        }
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{1}{December 12}{Kevin Truong}{}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+
+
+
+\section{Probability Axioms} 
+
+
+\subsection{Axioms}
+Probability ranges from 0 to 1. Discrete probability deals with finite axioms.
+A triple is a set of outcomes (\si{\ohm}, F, P). Kolmogrov has three axioms: 1.P(A) $\geq$
+1, 2. P(\si{\ohm}) = 1, 3. Sum of disjoint proabilities is the summation of the 
+individual probailities.
+
+Examples of good probability problems:
+
+\begin{itemize}
+\item probability of choosing a bit is 1/2
+\item probability of choosing from a regualar die is 1/6
+\item probability of a roll of the dice in which order matters is 1/36
+\item number of n bit strings is $2^n$ and the number of strings with with exactly one 1 is n
+\item chossing 5 cards from a deck in which order does and does not matter is ${n \choose 5}$ and $(n)_5$
+\end{itemize}
+
+If two probabilities are independent, the probability that both of them occur is P(A)P(B).
+
+\subsection{Inclusion - Exclusion Principle}
+
+\begin{equation}
+    Pr [ A \cup B  ] = Pr  [A] + Pr [ B ] - Pr [ A \cap B ] 
+\end{equation}
+
+
+\subsection{Conditional Probability and Chain Rule}
+
+\begin{equation}
+    Pr[A|B]= \frac{Pr[A \cap B]}{Pr[B]}\\
+    Pr [A  \cup B] = Pr [A | B] · Pr [B] 
+\end{equation}
+
+\subsection{Marginal Probability}
+\begin{equation}
+    Pr[A] = \sum_{i=1}^n  Pr[A | B_i]Pr[B_i].
+\end{equation}
+
+\subsection{Random Variables}
+
+A random variable X is a variable that takes on particular values randomly. This means that for each possible value x, there is an event [X = x] with some probability of occurring that corresponds to X (the random variable, usually written as an upper-case letter) taking on the value x (some fixed value).
+
+
+If the random variables are independent:
+\begin{equation}
+    Pr[X=x \land Y =y]=Pr[X=x]·Pr[Y =y]
+\end{equation}
+
+The expectation of a variable is the average value:
+
+\begin{equation}
+    E[X] =  \sum_x xPr[X = x]
+\end{equation}
+
+The expectation operator is linear: this means that E [X + Y] = E [X] + E[Y] and E[aX] = aE[X] when a is a constant.
+
+For products of random variables, the situation is more complicated. Here the rule
+is that E[XY] = E[X] · E[Y] if X and Y are independent.
+
+The conditional expectation:
+\begin{equation}
+    E[X] =  \sum_i E[X | A_i]Pr[A_i] 
+\end{equation}
+
+
+Useful expectation stuff to know:
+\begin{itemize}
+    \item E[aX +bY$|$Z] = aE[X$|$Z] +bE[Y$|$Z]. This is the conditional expectation version of linearity of expectation 
+	\item E[X$|$X]=X
+	\item If X and Y are independent, then E[Y$|$X] = E[Y].
+	\item E [E [X $|$Y ]] = E [X ]	
+\end{itemize}
+
+Expectation squared:
+\begin{equation}
+E [(X+Y)^2 | X]  = E [X^2 | X ] + 2E[XY |X] + E[Y^2|X]  = X^2 +
+2XE[Y] + E[Y^2] 
+\end{equation}
+
+\subsection{Variance}
+\begin{equation}
+E [X^2]   -(E [X])^2
+\end{equation}
+
+\begin{equation}
+Var [cX] = c^2 Var[X] 
+\end{equation}
+
+\begin{align}
+Var [X + Y ] &= E [(X + Y )^2]  − (E [X + Y ])^2\\
+&= Var [X] + Var [Y ] + 2(E [XY ] − E [X] · E [Y ]).
+\end{align}
+
+\section{Chinese Remainder Theorem}
+
+\subsection{Working Example of CRT}
+Find x such that 
+
+\begin{equation}
+	x \equiv 2 \; mod \;3 
+\end{equation}
+
+\begin{equation}
+	x \equiv 2 \; mod \;4 
+\end{equation}
+
+\begin{equation}
+	x \equiv 1 \; mod \;5 
+\end{equation}
+
+There exists a unique x such that $0 \leq x \leq 3*4*5$. 
+
+\begin{equation}
+x =   5 * 4 + 3 * 5 * ( 3 * 2 )  + 3 * 4 ( 3 )   
+\end{equation}
+
+\begin {align}
+	x &= 196\\
+	x &= 26 \; mod \; 60
+\end {align}
+
+
+\subsection{Euler's Theorem}
+
+\begin{equation}
+\phi (n) =  \prod_{i=1}^k p_i^{e_i -1} p_i -1
+\end{equation}
+
+Example would be finding the $\phi(12)$: 
+\begin{align}
+\phi(12) &= 2^2 * 3 ^ 1\\
+&= 2^{2-1} * (2-1) * 3^{1-1} * (3 - 1)\\
+&= 4
+\end{align}
+This means that there are 4 digits between 0 and 12 that are unique prime to 12
+ 
+For the case which the gcd of a and m is 1:
+\begin{equation}
+a^{\phi(m)} = 1 \; mod \; m
+\end{equation}
+
+
+For the case which m is prime, implies Little Fermat's Theorem:
+
+\begin{equation}
+a^{p - 1} = 1 \; mod \; p
+\end{equation}
+
+\section{Relations}
+
+\subsection{Representing relations}
+
+We can represent relations visually as graphs or matrices.
+
+\subsection{Operations on relations}
+
+Relations can be composed. Matrices can be composed and this is very similar
+to matrix multiplication. Relations can also have inverses
+
+\subsection{Classifying Relations}
+
+Relations must have these properties:
+\begin{itemize}
+\item reflexivity (aRa)
+\item antisymmetry (aRb and bRa) only if a = b
+\item symmetry (aRb and bRa) 
+\item transitivity (aRb and bRc implies aRc)
+\end{itemize}
+
+\subsection{Reflexivity}
+
+The equality relation is in a sense particularly reflexive: a relation R is reflexive if and only if it is a superset of =.
+
+\subsection{Symmetry}
+Another way to state symmetry is that R = $R^{-1}$.
+%Here is a citation, just for fun~\cite{CW87}.
+
+\subsection{Transitive}
+The set-theoretic form is that R is transitive
+if $R^2$ $\subset$ R, or in general if $R_n \subset$ R for all $n > 0$.
+
+\subsection{Equivalence Reations}
+
+An equivalence relation is a relation that is reflexive, symmetric, and transitive.
+
+Transitivity gives rise to equivalence classes. Any equivalence relation $\sim$  on a set A gives rise to a set of equivalence classes, where the equivalence class of an element a is the set of all b such that a $\sim$  b.
+
+We can partition a set based on the quivalence class.
+
+
+\begin{theorem}
+Let $\sim$ be a relation on A. Then each of the following conditions implies the others:
+\end{theorem}
+
+\begin{itemize}
+\item $\sim$ is reflexive, symmetric, and transitive.
+\item There is a partition of A into disjoint equivalence classes $A_i$ such that x $\sim$ y $\iff \exists \; i x \in A_i \land y \in A_i$.
+\end{itemize}
+
+\subsection{Partial orders}
+A partial order is a relation $\leq$ that is reflexive, transitive, and antisymmetric. A strict partial order is a relation $<$ that is irreflexive (x $\nlst$ x) and transitive.
+
+A total order is a partial order in which any two elements are comparable. This means that, given x and y, either x $\leq$ y or y $\leq$ x. A poset (S, $\leq$) where ≤ is a total order is called totally ordered.
+
+Examples of posets and total orders:
+
+\begin{itemize}
+\item $\leq$
+\item $\geq$
+\end{itemize}
+
+
+Examples of just posets:
+
+\begin{itemize}
+\item divisibility
+\item the product of two posets
+\item Let $\sum$ be some alphabet and consider the set$\sum ∗ = \sum * \cup  \sum^1 \cup \sum^2 \ldots$ of all finite words drawn from $\sum$. Given two words x and y, let x $\leq$ y if x is a prefix of y. If there is some word z such that xz=y. Then $(\sum ∗, \leq)$ is a poset.
+\end{itemize}
+
+
+\subsection{Hasse Diagrams}
+A way of representing partial orders that omits edges from reflexivity and transitivity
+
+\subsection{Comparability and Lattices}
+Two elements are comparable if xRy or yRx. If they can not be compared in anyway,
+they are called imcomparable. In a Hasse diagram, the elements of the paths going up
+are all comparable. Sister nodes are not comparable because they are not on 
+the same path.
+
+Total orders are partial orders in which any two elements in the lattice can be 
+compared. Any partial order can be "closed" to become a total order. All total orders
+are lattices
+
+Lattices is defined by the fact that for any two points in the lattice, the two points
+have both a local max and min. The lattice must also have an absolute max and min.
+
+
+Examples of lattices:
+
+\begin{itemize}
+\item total orders
+\item divisibility
+\item gcd
+\end{itemize}
+
+\subsection{Well Orders}
+
+A well order is a particularly restricted kind of total order. A partial order is a well order if it is a total order and every nonempty subset S has a minimum element x.
+
+An equivalent definition is that a total order is a well order if it contains no infinite descending chain, which is an infinite sequence $x_1 > x_2 > x_3 > \ldots$
+
+
+\subsection{Closures}
+
+The \textbf{reflexive closure} of a relation R (whose domain and codomain are equal) is the smallest super-relation of R that is reflexive; it is obtained by adding (x, x) to R for all x in R’s domain, which we can write as $R^0 \cup R$ where $R^0$ is just the identity relation on the domain of R. $R∗ =R_0 \cup R_1 \cup R_2 \ldots$
+
+The \textbf{symmetric closure} is the smallest symmetric super-relation of R; it is obtained by adding (y, x) to R whenever (x, y) is in R, or equivalently by taking $R \cup R^{-1}$.
+
+The \textbf{transitive closure} is obtained by adding (x, z) to R whenever (x,y) and (y,z) are both in R for some y—and continuing to do so until no new pairs of this form remain.8 The transitive closure can also be computed as $R+ = R_1 \cup R_2 \cup R_3 \ldots$
+
+One can do multiple closures at once. The goal of doing this is to make parti orders 
+and equivalence relations. The only property that can not be closed is antisymmetry. 
+
+
+\section{Counting}
+
+\subsection{Combinatorics}
+Counting a set A using a bijection f : A $\rightarrow$ [n] gives its size $|A|$ = n; this size is called the cardinality of n
+
+For infinite sets, cardinality is a little more complicated. The basic idea is that we define $|A|$ = $|B|$ if there is a bijection between them.
+
+\subsection{Inequalities}
+
+We write $|A| \leq |B|$ if there is an injection f : A $\rightarrow$  B, and similarly $|B| \leq |A|$ if there is an injection g : B $\rightarrow$ A. If both conditions hold, then there is a bijection between A and B, showing $|A| = |B|$.
+
+Similarly, if we write $|A| \geq |B|$ to indicate that there is a surjection from A to B, then $|A| \geq |B|$ and $|B| \geq |A| \implies |A| = |B|$. 
+
+If A and B are finite sets with $A \cap B = \empty$, then $|A ∪ B| = |A| + |B|$.
+
+\begin{equation}
+ \cup_i^k A_i  = |A_i|.
+\end{equation}
+
+For infinite sets: $|A| + |B| = \max(|A|, |B|)$
+
+\subsection{Pigeonhole Principles}
+
+If there are n items to fit into b bins, there will be at least one bin that 
+has ceiling n/b items
+
+\subsection{Subtraction, Multiplication, and exponeniation}
+\begin{equation}
+|A \backslash B| = |A| -  |A \cap B|
+\end{equation}
+
+\begin{equation}
+|A * B| = |A| * |B|
+\end{equation}
+
+Given sets A and B,let A $\rightarrow$ B be the set of functions f:B $\rightarrow$ A. Then $|A^B| = |A|^{|B|}$.
+
+\subsection{Counting Injections}
+This gives us three tools for counting functions between sets: 
+
+\begin{itemize}
+\item $n^k$ counts the number of functions from a k-element set to an n-element set
+\item $(n)_k$ counts the number of injections from a k-element set to an n-element set
+\item n! counts the number of bijections between two n-element sets (or from an n-element set to itself).
+\end{itemize} 
+
+\subsection{Division}
+Sometimes we can compute the size of a set S by using it (as an unknown variable) to compute the size of another set T (as a function of $|S|$), and then using some other way to count T to find its size, finally solving for $|S|$. This is known as counting two ways and is surprisingly useful when it works. We will assume that all the sets we are dealing with are finite, so we can expect things like subtraction and division to work properly.
+
+\subsection{Binominal}
+\begin{equation}
+{n \choose k} = \frac{n!}{((n-k)!k!}
+\end{equation}
+
+\subsection{Counting examples}
+
+Sometimes reducing to a previous case requires creativity. For example, suppose you win n identical cars on a game show and want to divide them among your k greedy relatives. Assuming that you don’t care about fairness, how many ways are there to do this?
+
+If it’s OK if some people don’t get a car at all, then you can imagine putting n cars and k − 1 dividers in a line, where relative 1 gets all the cars up to the first divider, relative 2 gets all the cars between the first and second dividers, and so forth up to relative k who gets all the cars after the (k − 1)-th divider. Assume that each car—and each divider—takes one parking space. Then you have n + k − 1 parking spaces with k − 1 dividers in them (and cars in the rest). There are exactly ${n+k-1  \choose k}$  ways to do this.
+
+Alternatively, suppose each relative demands at least 1 car. Then you
+can just hand out one car to each relative to start with, leaving n − k
+cars to divide as in the previous case. There are  (n−k)+k−1  =  n−1  k−1 k−1
+ways to do this.
+
+\section{Binomial Coefficients}
+\begin{equation}
+(x+y)^n = \sum_{k=0}^{\infty} {n \choose k} x^k y^{n-k}
+\end{equation}
+
+ ${n \choose k}$  is defined as $\frac{(n)_k}{k!}$, so negative numbers still work
+
+\subsection{Pascal's Triangle}
+\begin{equation}
+{n \choose k} = {n-1 \choose k} + {n-1 \choose k-1} 
+\end{equation}
+
+\subsection{Vandermonde's Identity}
+ \begin{equation}
+{m + n \choose r} = \sum_{k=0}^r {m \choose r-k} + {n \choose k}
+\end{equation}
+
+\subsection{Number of subsets}
+\begin{equation}
+\sum_0^k {n \choose k} = 2^n
+\end{equation}
+
+\subsection{Negative Binomials}
+\begin{equation}
+{-n \choose k} = (-1)^k {n+k-1 \choose k} 
+\end{equation}
+
+\subsection{Generating functions}
+\begin{equation}
+    F(z) = \sum_0^{\infty}  a_iz^i
+\end{equation}
+Examples of good generating functions to know:
+\begin{itemize}
+    \item $\frac{1}{1-z} = \sum_0^{\infty} z^i$
+    \item $\frac{1}{(1-z)^2} = \sum_0^{\infty} iz^i$
+    \item $\frac{1}{(1-z)^n} = \sum_0^{\infty} {n+i-1 \choose i}  z^i$
+    \item $(1+z)^n = \sum_0^{\infty} {n \choose i} z^i$
+\end{itemize}
+
+\subsection{Recurrence section}
+Generating Function in the form of a past or future value. A standard trick in this case is to multiply each of the $\forall$ i bits by $z_n$, sum over all n, and see what happens
+
+\subsection{Adding Generating Functions}
+Suppose C = A $\cup$ B and A and B are disjoint. Then the generating function for objects in C is F (z) + G(z).
+
+Example: Suppose that A is the set of all strings of zero or more letters x, where the weight of a string is just its length. Then F (z) = 1/(1 - z), since there is exactly one string of each length and the coefficient ai on each zi is always 1. Suppose that B is the set of all strings of zero or more letters y and/or z, so that G(z) = 1/(1-2z) (since there are now $2^i$ choices of length-i strings). The set C of strings that are either (a) all x’s or (b) made up of y’s, z’s, or both, has generating function F (z) + G(z) = 1/(1 - z) + 1/(1 - 2z).
+\subsection{Multiplying Generating Functions}
+\begin{equation}
+F(z)G(z)= \sum_{i=0}^{\infty} \sum_{j=0}^i a_j b_{j-i} z^i
+\end{equation}
+
+\subsection{Repetition}
+\begin{equation}
+H=1+F+F2+F3+\ldots = \frac{1}{1-F}
+\end{equation}
+
+
+Example: the regular taylor series
+\begin{equation}
+1 + x^2 + x^3 \ldots
+\end{equation}
+
+(0$|$11)$*$ Let A = \{0, 11\}, and let C be the set of all sequences of zeros and ones where ones occur only  in even-length runs. Then the generating function for A is $z + z^2$ and the generating function for C is $\frac{1}{(1-z-z^2)}$. We can extract exact coefficients from this generating function using the techniques below.
+
+\subsection{Pointing}
+\begin{equation}
+H(z)= z^n \frac{d^n}{dz^n}F(z)
+\end{equation}
+
+Count the number of finite sequences of zeros and ones where exactly two digits are underlined
+
+\subsection{Composition of Generating Functions}
+\begin{equation}
+    F(G(z)) = \sum_0^{\infty}a_k (G(z))^k
+\end{equation}
+
+\subsection{Recovering coefficients from generating functions}
+
+\begin{itemize}
+    \item Recognize the generating function from a table of known generating functions, or as a simple combination of such known generating functions. This doesn’t work very often but it is possible to get lucky.
+    \item To find the k-th coefficient of F(z), compute the k-th derivative $d^k/dz^k$ F(z) and divide by k! to shift $a_k$ to the $z_0$ term. Then substitute 0 for z.
+    \item If the generating function is of the form 1/Q(z), where Q is a polynomial
+with Q(0) $\neq$ 0, then it is generally possible to expand the generating function out as a sum of terms of the form $\frac{Pc}{(1-z/c)}$ where c is a root of Q (a value such that Q(c) = 0).
+\end{itemize}
+
+
+\subsection{Patrial Fraction Decomposition}
+
+\begin{equation}
+    \frac{1}{(1-az)(1-bz)} = \frac{A}{1-az} + \frac{B}{1-bz}
+\end{equation}
+
+\begin{equation}
+    A (1-bz) + B(1-az) = 1
+\end{equation}
+
+\begin{equation}
+A + B = 1
+\end{equation}
+\begin{equation}
+-Ab - Ba = 0
+\end{equation}
+\section{Graphs}
+\section{Linear Algebra}
+%\section*{References}
+%\beginrefs
+%\bibentry{CW87}{\sc D.~Coppersmith} and {\sc S.~Winograd}, 
+%``Matrix multiplication via arithmetic progressions,''
+%{\it Proceedings of the 19th ACM Symposium on Theory of Computing},
+%1987, pp.~1--6.
+%\endrefs
+\end{document}
